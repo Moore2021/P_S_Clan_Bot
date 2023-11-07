@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import fetch from 'node-fetch';
 import { verifyKey } from 'discord-interactions';
+import {getPlayerStats, getClanStats} from './apiCalls.js'
 
 export function VerifyDiscordRequest(clientKey) {
   return function (req, res, buf, encoding) {
@@ -25,7 +26,7 @@ export async function DiscordRequest(endpoint, options) {
     headers: {
       Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
       'Content-Type': 'application/json; charset=UTF-8',
-      'User-Agent': 'DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)',
+      'User-Agent': 'DiscordBot (https://github.com/Moore2021/P_S_Clan_Bot, 1.0.0)',
     },
     ...options
   });
@@ -41,11 +42,13 @@ export async function DiscordRequest(endpoint, options) {
 
 export async function InstallGlobalCommands(appId, commands) {
   // API endpoint to overwrite global commands
-  const endpoint = `applications/${appId}/commands`;
-
+  const endpoint = `applications/${appId}`;
+  const guildEnpoint = false ? `/guilds/597171669550759936`:'';
+  const wholeEndpoint = endpoint+guildEnpoint+`/commands`
+  const resetCommands = false ? [] : commands
   try {
     // This is calling the bulk overwrite endpoint: https://discord.com/developers/docs/interactions/application-commands#bulk-overwrite-global-application-commands
-    await DiscordRequest(endpoint, { method: 'PUT', body: commands });
+    await DiscordRequest(wholeEndpoint, { method: 'PUT', body: resetCommands });
   } catch (err) {
     console.error(err);
   }
@@ -60,3 +63,14 @@ export function getRandomEmoji() {
 export function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+    // "https://api.pubg.com/shards/$platform/players?filter[playerNames]=$playername"
+export async function getPlayerStatsPUBG(username, platform, userID) {
+  return await getPlayerStats(username, platform, userID)
+}
+
+export async function getClanStatsPUBG() {
+  return await getClanStats()
+}
+
+export const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
