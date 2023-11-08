@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import fetch from 'node-fetch';
 import { verifyKey } from 'discord-interactions';
-import {getPlayerStats, getClanStats} from './apiCalls.js'
+import { getPlayerStats, getClanStats, getPlayerStatsLife } from './apiCalls.js'
 
 export function VerifyDiscordRequest(clientKey) {
   return function (req, res, buf, encoding) {
@@ -43,8 +43,8 @@ export async function DiscordRequest(endpoint, options) {
 export async function InstallGlobalCommands(appId, commands) {
   // API endpoint to overwrite global commands
   const endpoint = `applications/${appId}`;
-  const guildEnpoint = false ? `/guilds/597171669550759936`:'';
-  const wholeEndpoint = endpoint+guildEnpoint+`/commands`
+  const guildEnpoint = false ? `/guilds/597171669550759936` : '';
+  const wholeEndpoint = endpoint + guildEnpoint + `/commands`
   const resetCommands = false ? [] : commands
   try {
     // This is calling the bulk overwrite endpoint: https://discord.com/developers/docs/interactions/application-commands#bulk-overwrite-global-application-commands
@@ -56,7 +56,7 @@ export async function InstallGlobalCommands(appId, commands) {
 
 // Simple method that returns a random emoji from list
 export function getRandomEmoji() {
-  const emojiList = ['😭','😄','😌','🤓','😎','😤','🤖','😶‍🌫️','🌏','📸','💿','👋','🌊','✨'];
+  const emojiList = ['😭', '😄', '😌', '🤓', '😎', '😤', '🤖', '😶‍🌫️', '🌏', '📸', '💿', '👋', '🌊', '✨'];
   return emojiList[Math.floor(Math.random() * emojiList.length)];
 }
 
@@ -64,13 +64,16 @@ export function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-    // "https://api.pubg.com/shards/$platform/players?filter[playerNames]=$playername"
-export async function getPlayerStatsPUBG(username, platform, userID) {
-  return await getPlayerStats(username, platform, userID)
+// "https://api.pubg.com/shards/$platform/players?filter[playerNames]=$playername"
+export async function getPlayerStatsPUBG(username, platform, gamemode) {
+  return await getPlayerStats(username, platform, gamemode)
 }
 
 export async function getClanStatsPUBG() {
   return await getClanStats()
 }
 
+export async function getPlayerStatsLifePUBG(username, platform, gamemode) {
+  return await getPlayerStatsLife(username, platform, gamemode)
+}
 export const delay = ms => new Promise(resolve => setTimeout(resolve, ms))

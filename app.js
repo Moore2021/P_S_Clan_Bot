@@ -4,8 +4,8 @@ import {
   InteractionType,
   InteractionResponseType,
 } from 'discord-interactions';
-import { VerifyDiscordRequest, getRandomEmoji, DiscordRequest, getPlayerStatsPUBG, delay, getClanStatsPUBG } from './utils.js';
-import {createClient} from 'redis';
+import { VerifyDiscordRequest, getRandomEmoji, DiscordRequest, getPlayerStatsPUBG, delay, getClanStatsPUBG, getPlayerStatsLifePUBG } from './utils.js';
+import { createClient } from 'redis';
 
 export const redis = await createClient()
   .on('error', err => console.log('Redis Client Error', err))
@@ -29,7 +29,7 @@ app.use(express.json({ verify: VerifyDiscordRequest(process.env.PUBLIC_KEY) }));
  */
 app.post('/interactions', async function (req, res) {
   // Interaction type and data
-  const { type, id, data, member } = req.body;
+  const { type, id, data } = req.body;
   /**
    * Handle verification requests
    */
@@ -43,7 +43,6 @@ app.post('/interactions', async function (req, res) {
    */
   if (type === InteractionType.APPLICATION_COMMAND) {
     const { name } = data;
-
     // "test" command
     if (name === 'clan') {
       // Send a message into the channel where command was triggered from
@@ -55,7 +54,7 @@ app.post('/interactions', async function (req, res) {
       });
     }
     //clanId=clan.f1a574aeab824d3b92c21a25aac8ff1f
-    if (name === 'claninfo'){
+    if (name === 'claninfo') {
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
@@ -63,21 +62,28 @@ app.post('/interactions', async function (req, res) {
         },
       });
     }
-    // "https://api.pubg.com/shards/$platform/players?filter[playerNames]=$playername"
-    if (name === 'pubgstats'){
-      const username = data.options[0].value
-      const platform = data.options[1].value
+
+    if (name === 'pubgstats') {
       res.send({
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE
       });
-      const stats = await getPlayerStatsPUBG(username,platform,member.user.id)
-      return
-      return res.send({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          content: JSON.stringify(stats),
-        },
-      });
+
+      let stats;
+      const { options } = data
+      const username = options[0].options[0].value;
+      const platform = options[0].options[1].value;
+      const gamemode = options[0].options[2].value;
+
+      if (options[0].name === `lifetime`) {
+        stats = await getPlayerStatsLifePUBG(username, platform, gamemode);
+      } else if (options[0].name === `byseason`) {
+        stats = await getPlayerStatsPUBG(username, platform, gamemode);
+      }
+
+      const { application_id, token } = req.body;
+      const endpoint = `/webhooks/${application_id}/${token}/messages/@original`;
+      //JSON.stringify(stats[gamemode])
+      return DiscordRequest(endpoint, { method: 'PATCH', body: { embeds: [stats] } });
     }
   }
 });
