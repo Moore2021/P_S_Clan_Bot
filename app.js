@@ -12,6 +12,7 @@ export const redis = await createClient()
   .connect();
 
 redis.flushAll()
+
 /**
  * await client.set('key', 'value');
  * const value = await client.get('key');
@@ -97,6 +98,15 @@ app.post('/interactions', async function (req, res) {
     }
 
     if (name === 'pubgstats') {
+      if (await redis.exists(`pubgstats_cmd_cooldown`)){
+        if (await redis.get(`pubgstats_cmd_cooldown`)==`true`) return res.send({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: 'Sorry, command is on cooldown for 1 minute'
+          },
+        });
+      }
+      redis.set(`pubgstats_cmd_cooldown`, `true`,{EX:60})
       res.send({
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE
       });

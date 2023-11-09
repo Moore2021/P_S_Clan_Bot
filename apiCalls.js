@@ -30,13 +30,13 @@ function _request(endpoint, redisKey, requestType) {
       } else {
         data = JSON.parse(data);
         if (requestType === `player`) {
-          redis.set(`PUBG_${redisKey}`, data.data[0].id, 60 * 1000 * 60 * 24)
+          redis.set(`PUBG_${redisKey}`, data.data[0].id,{EX: 60 * 1000 * 60})
         }
         if (requestType === `stats`) {
-          redis.set(`PUBG_${redisKey}`, JSON.stringify(data.data), 60 * 1000 * 60 * 24)
+          redis.set(`PUBG_${redisKey}`, JSON.stringify(data.data),{EX: 60 * 1000 * 60})
         }
         if (requestType === `clan_stats`) {
-          redis.set(`PUBG_${redisKey}`, JSON.stringify(data.data), 60 * 1000 * 60 * 24)
+          redis.set(`PUBG_${redisKey}`, JSON.stringify(data.data),{EX: 60 * 1000 * 60})
         }
       }
     })
@@ -90,7 +90,7 @@ async function _getSeasonId(platform) {
       value = getCurrentSeason(seasons.PC)
       break;
   }
-  redis.set(`PUBG_season_${platform}`, value, 60 * 1000 * 60 * 24)
+  redis.set(`PUBG_season_${platform}`, value,{EX: 60 * 1000 * 60})
   await delay(1000)
   return value
 }
