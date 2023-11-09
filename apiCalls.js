@@ -110,27 +110,26 @@ export async function getPlayerStatsLife(username, platform, gamemode) {
   const playerID = await _getPlayer(username, platform)
   const testPlayer = testResponsePlayer(playerID)
   await redis.del(`PUBG_API_ERROR`)
-  if (testPlayer != true) return testPlayer
+  if (testPlayer != true) return { type: `error`, error: testPlayer }
   const redisStatKey = `${playerID}_stats_life_${platform}`
-  let playerStats = await retrieveStats(`PUBG_${redisStatKey}`)
-  if (playerStats != false) return playerStats;
+  const playerStats = await retrieveStats(`PUBG_${redisStatKey}`)
+  if (playerStats != false) return { type: `embed`, formattedStats: formatPlayerStats(playerStats[gamemode], username, gamemode, platform, true) };
 
   const endpoint = `/shards/${platform}/players/${playerID}/seasons/lifetime`
   _request(endpoint, redisStatKey, `stats`)
   await delay(1000)
   const stats = await retrieveStats(`PUBG_${redisStatKey}`)
-  return formatPlayerStats(stats[gamemode], username, gamemode, platform)
-  return JSON.stringify(stats[gamemode])
+  return { type: `embed`, formattedStats: formatPlayerStats(stats[gamemode], username, gamemode, platform, true) }
 }
 
 export async function getPlayerStats(username, platform, gamemode) {
   const playerID = await _getPlayer(username, platform)
   const testPlayer = testResponsePlayer(playerID)
   await redis.del(`PUBG_API_ERROR`)
-  if (testPlayer != true) return testPlayer
+  if (testPlayer != true) return { type: `error`, error: testPlayer }
   const redisStatKey = `${playerID}_stats_${platform}`
-  let playerStats = await retrieveStats(`PUBG_${redisStatKey}`)
-  if (playerStats != false) return playerStats;
+  const playerStats = await retrieveStats(`PUBG_${redisStatKey}`)
+  if (playerStats != false) return { type: `embed`, formattedStats: formatPlayerStats(playerStats[gamemode], username, gamemode, platform, false) };
 
   const seasonID = await _getSeasonId(platform)
 
@@ -139,7 +138,7 @@ export async function getPlayerStats(username, platform, gamemode) {
   await delay(1000)
 
   const stats = await retrieveStats(`PUBG_${redisStatKey}`)
-  return JSON.stringify(stats[gamemode])
+  return { type: `embed`, formattedStats: formatPlayerStats(stats[gamemode], username, gamemode, platform, false) }
 }
 
 export async function getClanStats() {
@@ -182,7 +181,7 @@ export async function getClanStats() {
 }
 
 
-function formatPlayerStats(stats, username, gamemode, platform) {
+function formatPlayerStats(stats, username, gamemode, platform, life) {
   const { damageDealt, kills, wins, assists, dBNOs, headshotKills, maxKillStreaks, revives, roadKills, roundMostKills, roundsPlayed, suicides, teamKills, top10s, vehicleDestroys, longestKill } = stats
   function fppOrTpp(g) {
     if ([`solo`, `duo`, `squad`].some((value) => {
@@ -199,17 +198,17 @@ function formatPlayerStats(stats, username, gamemode, platform) {
   {
     "type": "rich",
     "title": `\`${username}'s ${mode} stats\``,
-    "description": `Your stats for ${mode == `TPP` ? `Third` : `First`}-person perspective (${mode == `TPP` ? `TPP` : `FPP`}).`,
+    "description": `Your stats for ${mode == `TPP` ? `Third` : `First`}-person perspective (${mode == `TPP` ? `TPP` : `FPP`}).\n${life ? `Lifetime` : `Season 26`} Stats`,
     "color": 0x00FFFF,
     "fields": [
       {
         "name": `K/D Ratio`,
-        "value": `\`1.30\``,
+        "value": `\`${(kills/(roundsPlayed-wins)).toFixed(1)}\``,
         "inline": true
       },
       {
         "name": `KDA Ratio`,
-        "value": `\`1.58\``,
+        "value": `\`${((kills+assists)/(roundsPlayed-wins)).toFixed(1)}\``,
         "inline": true
       },
       {
@@ -229,7 +228,7 @@ function formatPlayerStats(stats, username, gamemode, platform) {
       },
       {
         "name": `Damage per match`,
-        "value": `\`166.49\``,
+        "value": `\`${(damageDealt/roundsPlayed).toFixed(1)}\``,
         "inline": true
       },
       {
@@ -294,7 +293,7 @@ function formatPlayerStats(stats, username, gamemode, platform) {
       }
     ],
     "footer": {
-      "text": `linked is your stats on tracker.gg`
+      "text": `linked is your stats on tracker.gg; Some data may not be correct due to how it gets pulled`
     },
     "url": `https://tracker.gg/pubg/profile/${platform}/${username}/details`
   }

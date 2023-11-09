@@ -75,6 +75,12 @@ const playerStats = {
   ]
 }
 
-const ALL_COMMANDS = [clan, claninfo, playerStats];
+const addClanMember = {
+  name:"Add Clan Member",
+  type: 2
+}
+
+
+const ALL_COMMANDS = [clan, claninfo, playerStats, addClanMember];
 
 InstallGlobalCommands(process.env.APP_ID, ALL_COMMANDS);
