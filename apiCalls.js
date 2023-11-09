@@ -143,13 +143,13 @@ export async function getPlayerStats(username, platform, gamemode) {
 
 export async function getClanStats() {
   const endpoint = `/shards/steam/clans/clan.f1a574aeab824d3b92c21a25aac8ff1f`
-  const request = _request(endpoint, `clan_stats`, `clan_stats`)
+  _request(endpoint, `clan_stats`, `clan_stats`)
   await delay(1000)
   const clanDetails = JSON.parse(await redis.get(`PUBG_clan_stats`))
   const embed = {
     "type": "rich",
     "title": `PoP-Smoke`,
-    "description": "",
+    "description": `The Pop Smoke Gaming Clan, was created and founded by Zen (Also Known as Zenless). est. 2022\n[Discord invite](${process.env.DISCORD_INVITE})`,
     "color": 0x00FFFF,
     "fields": [
       {
@@ -175,7 +175,10 @@ export async function getClanStats() {
     },
     "author": {
       "name": "Owner: Zen"
-    }
+    },
+    "footer": {
+      "text": `Data for tag, level, and Members is pulled from PUBG.`
+    },
   }
   return embed
 }

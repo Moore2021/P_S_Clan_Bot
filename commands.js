@@ -1,16 +1,9 @@
 import 'dotenv/config';
 import { InstallGlobalCommands } from './utils.js';
 
-// Simple test command
+// clanId=clan.f1a574aeab824d3b92c21a25aac8ff1f
 const clan = {
   name: 'clan',
-  description: 'Information about the clan',
-  type: 1,
-};
-
-// clanId=clan.f1a574aeab824d3b92c21a25aac8ff1f
-const claninfo = {
-  name: 'claninfo',
   description: 'Information on the clan via PUBG',
   type: 1
 }
@@ -81,6 +74,6 @@ const addClanMember = {
 }
 
 
-const ALL_COMMANDS = [clan, claninfo, playerStats, addClanMember];
+const ALL_COMMANDS = [clan, playerStats, addClanMember];
 
 InstallGlobalCommands(process.env.APP_ID, ALL_COMMANDS);

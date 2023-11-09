@@ -77,18 +77,8 @@ app.post('/interactions', async function (req, res) {
         },
       });
     }
-
-    if (name === 'clan') {
-      // Send a message into the channel where command was triggered from
-      return res.send({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          content: 'The Pop Smoke Gaming Clan, was created and founded by Zen (Also Known as Zenless). est. 2022\nDiscord invite: https://discord.gg/EsPNzSSU',
-        },
-      });
-    }
     //clanId=clan.f1a574aeab824d3b92c21a25aac8ff1f
-    if (name === 'claninfo') {
+    if (name === 'clan') {
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
