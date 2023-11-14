@@ -49,7 +49,7 @@ app.post('/interactions', async function (req, res) {
       const { resolved: { members }, target_id } = data
       members[target_id].nick = members[target_id].nick == null ? `[P-S] ${member.user.global_name}` : `[P-S] ${members[target_id].nick}`;
       
-      const clanRoleId = `1168703590102220851 `
+      const communityRoleId = `1168703590102220851 `
       const guestRoleId = `1168706115052261487`
       function removeValue(value, index, arr) {
         const guestRoleId = `1168706115052261487`
@@ -62,7 +62,7 @@ app.post('/interactions', async function (req, res) {
         return false;
       }
       if (members[target_id].roles.includes(guestRoleId)) members[target_id].roles.filter(removeValue)
-      if (!members[target_id].roles.includes(clanRoleId)) members[target_id].roles.push(clanRoleId);
+      if (!members[target_id].roles.includes(communityRoleId)) members[target_id].roles.push(communityRoleId);
       const endpoint = `/guilds/${guild_id}/members/${target_id}`;
       DiscordRequest(endpoint, {
         method: 'PATCH', body: {
@@ -78,7 +78,7 @@ app.post('/interactions', async function (req, res) {
       });
     }
     //clanId=clan.f1a574aeab824d3b92c21a25aac8ff1f
-    if (name === 'clan') {
+    if (name === 'community') {
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {

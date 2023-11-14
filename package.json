@@ -1,5 +1,5 @@
 {
-  "name": "p_s_clan_bot",
+  "name": "p_s_community_bot",
   "version": "1.0.0",
   "description": "A Bot to help with retrieving stats and moderation",
   "main": "app.js",

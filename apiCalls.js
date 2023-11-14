@@ -35,7 +35,7 @@ function _request(endpoint, redisKey, requestType) {
         if (requestType === `stats`) {
           redis.set(`PUBG_${redisKey}`, JSON.stringify(data.data),{EX: 60 * 1000 * 60})
         }
-        if (requestType === `clan_stats`) {
+        if (requestType === `community_stats`) {
           redis.set(`PUBG_${redisKey}`, JSON.stringify(data.data),{EX: 60 * 1000 * 60})
         }
       }
@@ -143,28 +143,28 @@ export async function getPlayerStats(username, platform, gamemode) {
 
 export async function getClanStats() {
   const endpoint = `/shards/steam/clans/clan.f1a574aeab824d3b92c21a25aac8ff1f`
-  _request(endpoint, `clan_stats`, `clan_stats`)
+  _request(endpoint, `community_stats`, `community_stats`)
   await delay(1000)
-  const clanDetails = JSON.parse(await redis.get(`PUBG_clan_stats`))
+  const communityDetails = JSON.parse(await redis.get(`PUBG_community_stats`))
   const embed = {
     "type": "rich",
     "title": `PoP-Smoke`,
-    "description": `The Pop Smoke Gaming Clan, was created and founded by Zen (Also Known as Zenless). est. 2022\n[Discord invite](${process.env.DISCORD_INVITE})`,
+    "description": `The Pop Smoke Gaming Community, was created and founded by Zen (Also Known as Zenless). est. 2022\n[Discord invite](${process.env.DISCORD_INVITE})`,
     "color": 0x00FFFF,
     "fields": [
       {
         "name": `Clan Tag`,
-        "value": clanDetails.attributes.clanTag,
+        "value": communityDetails.attributes.clanTag,
         "inline": true
       },
       {
         "name": `Clan Level`,
-        "value": `${clanDetails.attributes.clanLevel}`,
+        "value": `${communityDetails.attributes.clanLevel}`,
         "inline": true
       },
       {
         "name": `Clan Member Count`,
-        "value": `${clanDetails.attributes.clanMemberCount}`,
+        "value": `${communityDetails.attributes.clanMemberCount}`,
         "inline": true
       }
     ],
