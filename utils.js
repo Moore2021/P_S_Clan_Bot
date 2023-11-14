@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import fetch from 'node-fetch';
 import { verifyKey } from 'discord-interactions';
-import { getPlayerStats, getClanStats, getPlayerStatsLife } from './apiCalls.js'
+import { getPlayerStats, getClanStats, getPlayerStatsLife } from './PUBGapiCalls.js'
+import {getSteamGroup} from './STEAMapiCalls.js'
 
 export function VerifyDiscordRequest(clientKey) {
   return function (req, res, buf, encoding) {
@@ -70,7 +71,48 @@ export async function getPlayerStatsPUBG(username, platform, gamemode) {
 }
 
 export async function getClanStatsPUBG() {
-  return await getClanStats()
+  const PUBG_Clan_details = await getClanStats()
+  const STEAM_GROUP = await getSteamGroup()
+  const embed = {
+    "type": "rich",
+    "title": `PoP-Smoke`,
+    "description": `The Pop Smoke Gaming Community, was created and founded by Zen (Also Known as Zenless). est. 2022\n[Discord invite](${process.env.DISCORD_INVITE})\n[Steam Group](https://steamcommunity.com/groups/PSmoke)`,
+    "color": 0x00FFFF,
+    "fields": [
+      {
+        "name": `Clan Tag`,
+        "value": PUBG_Clan_details.clanTag,
+        "inline": true
+      },
+      {
+        "name": `Clan Level`,
+        "value": `${PUBG_Clan_details.clanLevel}`,
+        "inline": true
+      },
+      {
+        "name": `Clan Member Count`,
+        "value": `${PUBG_Clan_details.clanMemberCount}`,
+        "inline": true
+      },
+      {        
+        "name": `Steam Member Count`,
+        "value": `${STEAM_GROUP.memberCount}`,
+        "inline": false
+      }
+    ],
+    "thumbnail": {
+      "url": `https://media.discordapp.net/attachments/1168703085321932861/1168774202724208661/BANNER.png?ex=6552fccc&is=654087cc&hm=9c8ed20675d803b27363fb855ded92cc2ee6eea348a946b85d377469dd3e9c9c&=`,
+      "height": 0,
+      "width": 0
+    },
+    "author": {
+      "name": "Owner: Zen"
+    },
+    "footer": {
+      "text": `Data for tag, level, and Members is pulled from PUBG.`
+    },
+  }
+  return embed
 }
 
 export async function getPlayerStatsLifePUBG(username, platform, gamemode) {

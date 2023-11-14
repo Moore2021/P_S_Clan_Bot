@@ -146,41 +146,12 @@ export async function getClanStats() {
   _request(endpoint, `community_stats`, `community_stats`)
   await delay(1000)
   const communityDetails = JSON.parse(await redis.get(`PUBG_community_stats`))
-  const embed = {
-    "type": "rich",
-    "title": `PoP-Smoke`,
-    "description": `The Pop Smoke Gaming Community, was created and founded by Zen (Also Known as Zenless). est. 2022\n[Discord invite](${process.env.DISCORD_INVITE})`,
-    "color": 0x00FFFF,
-    "fields": [
-      {
-        "name": `Clan Tag`,
-        "value": communityDetails.attributes.clanTag,
-        "inline": true
-      },
-      {
-        "name": `Clan Level`,
-        "value": `${communityDetails.attributes.clanLevel}`,
-        "inline": true
-      },
-      {
-        "name": `Clan Member Count`,
-        "value": `${communityDetails.attributes.clanMemberCount}`,
-        "inline": true
-      }
-    ],
-    "thumbnail": {
-      "url": `https://media.discordapp.net/attachments/1168703085321932861/1168774202724208661/BANNER.png?ex=6552fccc&is=654087cc&hm=9c8ed20675d803b27363fb855ded92cc2ee6eea348a946b85d377469dd3e9c9c&=`,
-      "height": 0,
-      "width": 0
-    },
-    "author": {
-      "name": "Owner: Zen"
-    },
-    "footer": {
-      "text": `Data for tag, level, and Members is pulled from PUBG.`
-    },
+  const results = {
+    clanTag: communityDetails.attributes.clanTag,
+    clanLevel: communityDetails.attributes.clanLevel,
+    clanMemberCount: communityDetails.attributes.clanMemberCount,
   }
-  return embed
+  return results
 }
 
 
