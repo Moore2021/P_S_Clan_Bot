@@ -7,6 +7,25 @@ const community = {
   description: 'Information on the community via PUBG',
   type: 1
 }
+
+const lfg = {
+  name: 'lfg',
+  description: 'Create a LFG post and link to VC if availble',
+  type: 1,
+  options: [{
+    name: 'message',
+    description: 'What do you want to say.',
+    type: 3,
+    required: true
+  }, {
+    name: 'voicechat',
+    description: 'Select what voice chat the user should join',
+    type: 7,
+    channel_types: [2],
+    required: false
+  }]
+}
+
 const commandOptionsUsername = {
   name: 'username',
   description: 'Your ign name',
@@ -69,11 +88,11 @@ const playerStats = {
 }
 
 const addCommunityMember = {
-  name:"Add Community Member",
+  name: "Add Community Member",
   type: 2
 }
 
 
-const ALL_COMMANDS = [community, playerStats, addCommunityMember];
+const ALL_COMMANDS = [community, playerStats, addCommunityMember, lfg];
 
 InstallGlobalCommands(process.env.APP_ID, ALL_COMMANDS);

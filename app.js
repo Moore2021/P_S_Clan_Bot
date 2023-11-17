@@ -48,7 +48,7 @@ app.post('/interactions', async function (req, res) {
     if (name === `Add Clan Member`) {
       const { resolved: { members }, target_id } = data
       members[target_id].nick = members[target_id].nick == null ? `[P-S] ${member.user.global_name}` : `[P-S] ${members[target_id].nick}`;
-      
+
       const communityRoleId = `1168703590102220851 `
       const guestRoleId = `1168706115052261487`
       function removeValue(value, index, arr) {
@@ -77,6 +77,7 @@ app.post('/interactions', async function (req, res) {
         },
       });
     }
+
     //clanId=clan.f1a574aeab824d3b92c21a25aac8ff1f
     if (name === 'community') {
       return res.send({
@@ -87,16 +88,34 @@ app.post('/interactions', async function (req, res) {
       });
     }
 
+    if (name === 'lfg') {
+      const { options } = data
+      const message = options[0].value
+      const channel = options[1].value
+      const embed = {
+        "type": "rich",
+        "title": `${member.nick ? member.nick : member.user.global_name} - LFG`,
+        "description": `${message}\nin channel: <#${channel}>`,
+        "color": 0x00FFFF,
+      }
+      return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          embeds: [embed],
+        },
+      });
+    }
+
     if (name === 'pubgstats') {
-      if (await redis.exists(`pubgstats_cmd_cooldown`)){
-        if (await redis.get(`pubgstats_cmd_cooldown`)==`true`) return res.send({
+      if (await redis.exists(`pubgstats_cmd_cooldown`)) {
+        if (await redis.get(`pubgstats_cmd_cooldown`) == `true`) return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
             content: 'Sorry, command is on cooldown for 1 minute'
           },
         });
       }
-      redis.set(`pubgstats_cmd_cooldown`, `true`,{EX:60})
+      redis.set(`pubgstats_cmd_cooldown`, `true`, { EX: 60 })
       res.send({
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE
       });
