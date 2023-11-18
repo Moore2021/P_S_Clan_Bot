@@ -49,7 +49,7 @@ app.post('/interactions', async function (req, res) {
       const { resolved: { members }, target_id } = data
       members[target_id].nick = members[target_id].nick == null ? `[P-S] ${member.user.global_name}` : `[P-S] ${members[target_id].nick}`;
 
-      const communityRoleId = `1168703590102220851 `
+      const communityRoleId = `1168703590102220851`
       const guestRoleId = `1168706115052261487`
       function removeValue(value, index, arr) {
         const guestRoleId = `1168706115052261487`
