@@ -34,7 +34,8 @@ async function _request(endpoint, redisKey) {
 
 export async function getSteamGroup(){
   const redisKey = `STEAM_GROUP`
-  let steamGroupData = await redis.get(redisKey)
+  let steamGroupData = JSON.parse(await redis.get(redisKey))
+  console.log(steamGroupData)
   if (!steamGroupData) {
     const endpoint = `/gid/103582791474109088/memberslistxml/?xml=1`
     await _request(endpoint, redisKey)
