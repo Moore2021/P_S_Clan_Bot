@@ -72,7 +72,7 @@ app.post('/interactions', async function (req, res) {
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: `Ok, ${member.user.global_name}'s nickname has been updated, and roles have been swapped..`,
+          content: `Ok, ${users[target_id].global_name}'s nickname has been updated, and roles have been swapped..`,
         },
       });
     }
