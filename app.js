@@ -44,11 +44,10 @@ app.post('/interactions', async function (req, res) {
    */
   if (type === InteractionType.APPLICATION_COMMAND) {
     const { name } = data;
+    if (name === `Add Community Member`) {
 
-    if (name === `Add Clan Member`) {
-      const { resolved: { members }, target_id } = data
-      members[target_id].nick = members[target_id].nick == null ? `[P-S] ${member.user.global_name}` : `[P-S] ${members[target_id].nick}`;
-
+      const { resolved: { members, users }, target_id } = data
+      members[target_id].nick = members[target_id].nick == null ? `[P-S] ${users[target_id].global_name}` : members[target_id].nick.startsWith(`[P-S] `) ? `${members[target_id].nick}` :`[P-S] ${members[target_id].nick}`;
       const communityRoleId = `1168703590102220851`
       const guestRoleId = `1168706115052261487`
       function removeValue(value, index, arr) {
