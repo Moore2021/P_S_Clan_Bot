@@ -90,11 +90,11 @@ app.post('/interactions', async function (req, res) {
     if (name === 'lfg') {
       const { options } = data
       const message = options[0].value
-      const channel = options[1].value
+      const channel = options[1].value ? options[1].value : false
       const embed = {
         "type": "rich",
         "title": `${member.nick ? member.nick : member.user.global_name} - LFG`,
-        "description": `${message}\nin channel: <#${channel}>`,
+        "description": channel ? `${message}\nin channel: <#${channel}>` : `${message}`,
         "color": 0x00FFFF,
       }
       return res.send({
