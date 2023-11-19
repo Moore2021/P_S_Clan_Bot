@@ -4,7 +4,7 @@ import {
   InteractionType,
   InteractionResponseType,
 } from 'discord-interactions';
-import { VerifyDiscordRequest, getRandomEmoji, DiscordRequest, getPlayerStatsPUBG, delay, getClanStatsPUBG, getPlayerStatsLifePUBG } from './utils.js';
+import { VerifyDiscordRequest, getRandomEmoji, DiscordRequest, getPlayerStatsPUBG, delay, getClanStatsPUBG, getPlayerStatsLifePUBG, markdownFilter } from './utils.js';
 import { createClient } from 'redis';
 
 export const redis = await createClient()
@@ -47,7 +47,7 @@ app.post('/interactions', async function (req, res) {
     if (name === `Add Community Member`) {
 
       const { resolved: { members, users }, target_id } = data
-      members[target_id].nick = members[target_id].nick == null ? `[P-S] ${users[target_id].global_name}` : members[target_id].nick.startsWith(`[P-S] `) ? `${members[target_id].nick}` :`[P-S] ${members[target_id].nick}`;
+      members[target_id].nick = members[target_id].nick == null ? `[P-S] ${users[target_id].global_name}` : members[target_id].nick.startsWith(`[P-S] `) ? `${members[target_id].nick}` : `[P-S] ${members[target_id].nick}`;
       const communityRoleId = `1168703590102220851`
       const guestRoleId = `1168706115052261487`
       function removeValue(value, index, arr) {
@@ -91,9 +91,12 @@ app.post('/interactions', async function (req, res) {
       const { options } = data
       const message = options[0].value
       const channel = options[1] ? options[1].value : false
+      const userName = member.nick ? member.nick : member.user.global_name
+      const formattedUsername = markdownFilter(userName)
+      
       const embed = {
         "type": "rich",
-        "title": `${member.nick ? member.nick : member.user.global_name} - LFG`,
+        "title": `${formattedUsername} - LFG`,
         "description": channel ? `${message}\nin channel: <#${channel}>` : `${message}`,
         "color": 0x00FFFF,
       }

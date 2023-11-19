@@ -41,6 +41,15 @@ export async function DiscordRequest(endpoint, options) {
   return res;
 }
 
+export function markdownFilter(raw) {
+  if (raw.includes(`_`)) raw = raw.replace(/_/g, `\\_`);
+  if (raw.includes(`*`)) raw = raw.replace(/[*]/g, `\\*`);
+  if (raw.includes(`\``)) raw = raw.replace(/`/g, "\\`");
+  if (raw.includes(`>`)) raw = raw.replace(/>/g, `\\>`);
+  if (raw.includes(`|`)) raw = raw.replace(/[|]/g, `\\|`);
+  return raw;
+}
+
 export async function InstallGlobalCommands(appId, commands) {
   // API endpoint to overwrite global commands
   const endpoint = `applications/${appId}`;
