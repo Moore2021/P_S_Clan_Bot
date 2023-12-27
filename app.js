@@ -47,6 +47,20 @@ app.post('/interactions', async function (req, res) {
     if (name === `Add Community Member`) {
 
       const { resolved: { members, users }, target_id } = data
+      const guildendpoint = `guilds/${guild_id}`;
+      const request = await DiscordRequest(guildendpoint, {
+        method: 'PATCH', body: {
+          nick: members[target_id].nick,
+          roles: members[target_id].roles
+        }
+      });
+      const result = await request.json()
+      if (result.owner_id == target_id) return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: `I am unable to perform this action as I can not edit the server owner. This is a discord limitation.`,
+        },
+      })
       members[target_id].nick = members[target_id].nick == null ? `[P-S] ${users[target_id].global_name}` : members[target_id].nick.startsWith(`[P-S] `) ? `${members[target_id].nick}` : `[P-S] ${members[target_id].nick}`;
       const communityRoleId = `1168703590102220851`
       const guestRoleId = `1168706115052261487`
@@ -62,7 +76,7 @@ app.post('/interactions', async function (req, res) {
       }
       if (members[target_id].roles.includes(guestRoleId)) members[target_id].roles.filter(removeValue)
       if (!members[target_id].roles.includes(communityRoleId)) members[target_id].roles.push(communityRoleId);
-      const endpoint = `/guilds/${guild_id}/members/${target_id}`;
+      const endpoint = `guilds/${guild_id}/members/${target_id}`;
       DiscordRequest(endpoint, {
         method: 'PATCH', body: {
           nick: members[target_id].nick,
@@ -72,7 +86,7 @@ app.post('/interactions', async function (req, res) {
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: `Ok, ${users[target_id].global_name}'s nickname has been updated, and roles have been swapped..`,
+          content: `Ok, ${users[target_id].global_name}'s nickname has been updated, and roles have been swapped.`,
         },
       });
     }
@@ -135,7 +149,7 @@ app.post('/interactions', async function (req, res) {
       }
 
       const { application_id, token } = req.body;
-      const endpoint = `/webhooks/${application_id}/${token}/messages/@original`;
+      const endpoint = `webhooks/${application_id}/${token}/messages/@original`;
       let body;
       if (stats.type === `embed`) {
         body = { embeds: [stats.formattedStats] }
